@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">B+ Tree Maker</string>
+    <string name="order_field">Order</string>
+    <string name="create_tree">CREATE B+ TREE</string>
+    <string name="welcome_note">Advanced database students have a hard time creating B and B+ trees since they are bulky and mostly prone to inevitable errors. Enter the order or the B+ Tree you would like to create and click the button to get assistance creating one</string>
+    <string name="error_message">Please fill in a valid order</string>
+    <string name="enter_value">Enter Value . . .</string>
+    <string name="insert">INSERT</string>
+
+</resources>
