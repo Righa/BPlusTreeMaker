@@ -6,15 +6,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 
 public class TreeViewActivity extends AppCompatActivity {
+    RecyclerView.LayoutManager viewManager;
+    RecyclerView view;
+    RecyclerView.Adapter viewAdapter;
 
     ArrayList<NodeItem> nodeItems;
-    String[][] a = new String[1][1];
+    String[][] a;
     int order;
-    int m = order-1;
+    Populater populater = new Populater();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,128 +29,56 @@ public class TreeViewActivity extends AppCompatActivity {
         nodeItems = new ArrayList<>();
         Intent orderIntent = getIntent();
         order = orderIntent.getIntExtra("TREE_ORDER", 0);
-        String tree = String.valueOf(order);
 
-        nodeItems.add(new NodeItem(tree));
-        nodeItems.add(new NodeItem("4,5,6"));
-        nodeItems.add(new NodeItem("7,8,9"));
+        populater.setOrder(order);
 
-        RecyclerView view = findViewById(R.id.my_recycler);
-        view.setHasFixedSize(true);
-        RecyclerView.LayoutManager viewManager = new LinearLayoutManager(this);
-        RecyclerView.Adapter viewAdapter = new NodeAdapter(nodeItems);
+        makeTree();
+        //nodeItems.add(new NodeItem("Start inserting values..."));
+
+        view = findViewById(R.id.my_recycler);
+        //view.setHasFixedSize(true);
+        viewManager = new LinearLayoutManager(this);
+        viewAdapter = new NodeAdapter(nodeItems);
 
         view.setLayoutManager(viewManager);
         view.setAdapter(viewAdapter);
     }
 
-   // public void makeTree(int order) {
-   // }
+   public void makeTree() {
+        //clean initials
+       nodeItems.clear();
+       //re-populate nodes with new array
+       a = populater.getNewArray();
+       if (a[0][0] == null)
+           return;
 
-    public void injectValue(String x, int level) {
-        int value = 0;
-        boolean inserted = false;
-        //find place to insert
-        for (int i = 0; i < a[level].length; i++) {
-            //when the level in new the only value is null
-            if ( a[level][i] == null ) {
-                a[level][i] = x;
-                inserted = true;
-                break;
-            }
-            //not a divider
-            else if (!"x".equals(a[level][i])) {
-                if (Integer.parseInt(a[level][i]) > Integer.parseInt(x)) {
-                    a[level] = insert(x, i, level);
-                    inserted = true;
-                    break;
-                }
-            }
-            //node beyond divider is no go
-            else if (Integer.parseInt(a[level][i+1]) > Integer.parseInt(x)) {
-                a[level] = insert(x, i, level);
-                inserted = true;
-                break;
-            }
-        }
+       for (int i = a.length-1; i >= 0; i = i - 1) {
+           String allNodes = "|";
+           for (int j = 0; j < a[i].length; j++) {
+               if (a[i][j].equals("x")) {
+                   if (i == 0)
+                       allNodes = String.format("%s%s", allNodes, "| -> |");
+                   else
+                       allNodes = String.format("%s%s", allNodes, "|  |");
+               }
+               else
+                   allNodes = String.format("%s%s,",allNodes, a[i][j]);
+           }
+           allNodes = String.format("%s%s",allNodes, "|");
+           nodeItems.add(new NodeItem(allNodes));
+       }
 
-        //if it is greater than all
-        if (!inserted) {
-            a[level] = insert(x, a[level].length, level);
-        }
+       viewAdapter.notifyDataSetChanged();
+   }
 
-        for (int i = 0; i < a[level].length; i++) {
+    public void reCraftTree(View view) {
+        EditText newValueField = findViewById(R.id.new_value_field);
+        String newValue = newValueField.getText().toString();
 
-            //reset value if one node is passed
+        populater.injectValue(newValue, 0);
 
-            if ("x".equals(a[level][i])) {
-                value = 0;
-            }
-
-            //split if value exceeds m-1
-
-            else if(value == m){
-                split(level,i);
-                break;
-            }
-
-            //i don't edit after the code works
-            //i.e could have worked without nesting this statement
-
-            else{
-                value++;
-            }
-        }
-
-    }
-
-    public void split(int level, int nodeAt) {
-
-        try {
-            //push up index
-
-            injectValue(a[level][nodeAt-(m/2)], level+1);
-
-            //divide node
-
-            a[level] = insert("x",nodeAt-(m/2),level);
-
-        }
-
-        catch (ArrayIndexOutOfBoundsException e) {
-
-            //create new level
-
-            String[][] newArray = new String[a.length + 1][ 1 ];
-
-            System.arraycopy(a, 0, newArray, 0, a.length);
-
-            a = newArray;
-
-            //push up index
-
-            injectValue(a[level][nodeAt-(m/2)], level+1);
-
-            //divide node
-
-            a[level] = insert("x",nodeAt-(m/2),level);
-
-
-        }
-    }
-
-    private String[] insert(String key, int index, int level) {
-
-        String[] result = new String[a[level].length + 1];
-
-        System.arraycopy(a[level], 0, result, 0, index);
-
-        result[index] = key;
-
-        if (a[level].length + 1 - index + 1 >= 0)
-            System.arraycopy(a[level], index + 1 - 1, result, index + 1, a[level].length + 1 - index + 1);
-
-        return result;
+        //addNodeItem(newValue, 0);
+        makeTree();
     }
 
 }

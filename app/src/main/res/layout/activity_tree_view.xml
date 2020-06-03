@@ -15,11 +15,12 @@
         android:autofillHints="" />
 
     <Button
+        android:id="@+id/insert_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/insert"
+        android:onClick="reCraftTree"
         android:layout_toEndOf="@id/new_value_field" />
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/my_recycler"
