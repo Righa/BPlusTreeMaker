@@ -23,7 +23,8 @@
             android:textColor="@android:color/black"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            app:layout_constraintRight_toRightOf="parent"
+            android:gravity="center_horizontal" />
 
         <EditText
             android:id="@+id/order_field"

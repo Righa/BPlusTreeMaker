@@ -77,8 +77,9 @@ public class TreeViewActivity extends AppCompatActivity {
 
         populater.injectValue(newValue, 0);
 
-        //addNodeItem(newValue, 0);
         makeTree();
+
+        newValueField.setText("");
     }
 
 }
